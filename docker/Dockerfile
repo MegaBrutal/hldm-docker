@@ -23,6 +23,9 @@ RUN dpkg --add-architecture i386 \
     && groupadd -r steam && useradd -r -g steam -m -d /opt/steam steam \
     && mkdir /deploy
 
+ADD hldm.tar.xz /opt/steam/
+RUN chown -vR steam:steam /opt/steam/hldm
+
 USER steam
 WORKDIR /opt/steam
 COPY ./hldm.install /opt/steam
@@ -30,7 +33,7 @@ COPY ./hldm.install /opt/steam
 # Download SteamCMD and install HLDM. Abort container build on failure.
 RUN curl -sL media.steampowered.com/client/installer/steamcmd_linux.tar.gz | tar xzvf - \
     && ldd /opt/steam/linux32/steamcmd \
-    && ./steamcmd.sh +runscript hldm.install \
+    && ./steamcmd.sh +login anonymous +quit \
     && rm -fr /opt/steam/hldm/cstrike \
     && rm -fr /opt/steam/hldm/siteserverui \
     && rm -fr /opt/steam/hldm/linux64 \
