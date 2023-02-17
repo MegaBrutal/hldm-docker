@@ -6,6 +6,9 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 
+ARG game=valve
+ARG hlds=hldm.tar.xz
+
 # Update base image and install dependencies.
 RUN dpkg --add-architecture i386 \
     && sed -i "s/main$/main non-free/g" /etc/apt/sources.list \
@@ -23,7 +26,7 @@ RUN dpkg --add-architecture i386 \
     && groupadd -r steam && useradd -r -g steam -m -d /opt/steam steam \
     && mkdir /deploy
 
-ADD hldm.tar.xz /opt/steam/
+ADD ${hlds} /opt/steam/
 RUN chown -vR steam:steam /opt/steam/hldm
 
 USER steam
@@ -47,8 +50,9 @@ RUN mkdir -p $HOME/.steam \
 WORKDIR /opt/steam/hldm
 
 # Copy configs, Metamod, Stripper2 and AMX.
-COPY --chown=steam:steam deploy/copy-gamedir valve
+COPY --chown=steam:steam deploy/copy-gamedir ${game}
 COPY --chown=steam:steam ./hlds_deploy ./hlds_deploy
+RUN sed -i "s/^TARGET_GAMEDIR=.*$/TARGET_GAMEDIR=${game}/" hlds_deploy
 
 EXPOSE 27015
 EXPOSE 27015/udp

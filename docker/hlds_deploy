@@ -211,4 +211,4 @@ fi
 # Execute the hlds_run script, replacing the current process, thus this
 # deployment script and its shell interpreter will be unloaded from memory
 announce "Starting HLDS..."
-exec ./hlds_run "$@"
+exec ./hlds_run -game "${TARGET_GAMEDIR}" "$@"
